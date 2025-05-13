@@ -15,7 +15,7 @@ import { useSelector } from 'react-redux';
 
 import AuthForm from '../features/auth/AuthForm';
 import { selectCurrentUser } from '../features/auth/currentUserSlice';
-import UserMenu from '../components/UserMenue';
+import UserMenu from './UserMenu';
 
 const Navbar = () => {
   const user = useSelector(selectCurrentUser);

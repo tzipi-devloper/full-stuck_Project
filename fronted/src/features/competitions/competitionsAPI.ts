@@ -1,31 +1,26 @@
 import competitionDemo from "./competitionSlice";
-import { CompetitionItem } from "./competitionsTypes";
 
 const competitionsAPI = competitionDemo.injectEndpoints({
   endpoints: (builder) => ({
-    getAllUsers: builder.query<CompetitionItem[], void>({
-      query: () => "/",
-      providesTags: ["Competition"],
-    }),
-    createCompetition: builder.mutation({
-      query: (newCompetition) => ({
-        url: "/",
-        method: "POST",
-        body: newCompetition,
-      }),
-      invalidatesTags: ["Competition"],
-    }),
     getCompetitionByCategory: builder.query({
       query: (category) => `/${category}`,
       providesTags: ["Competition"],
+    }),
+
+    createCompetition: builder.mutation<void, FormData>({
+      query: (formData) => ({
+        url: "/",
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: ["Competition"],
     }),
   }),
 });
 
 export const {
-  useGetAllUsersQuery,
-  useCreateCompetitionMutation,
   useGetCompetitionByCategoryQuery,
+  useCreateCompetitionMutation,
 } = competitionsAPI;
 
 export default competitionsAPI;
