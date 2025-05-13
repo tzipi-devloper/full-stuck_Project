@@ -1,8 +1,10 @@
-import CompetitionList from "./CompetitionList"
+
+import CompetitionList from "./component/CompetitionList"
 
 const ShowCompetition = () => {
   return (
     <div>
+    
       <CompetitionList/>
     </div>
   )
