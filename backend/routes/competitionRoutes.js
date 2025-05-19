@@ -7,7 +7,7 @@ const upload = multer({ storage });
 
 router.put("/update/:competitionId", updateRating);
 router.get('/:category', getCompetitionsByCategory);
-router.post("/", upload.single("image"), createCompetition);
+router.post("/", upload.single("file"), createCompetition);
 
 module.exports = router;
 

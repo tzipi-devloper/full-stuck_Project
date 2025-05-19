@@ -2,6 +2,7 @@ const Competition = require('../models/Competition');
 
 exports.createCompetition = async (req, res) => {
   try {
+    console.log("הנתונים שקיבלתי:", JSON.stringify(req.body));
     const { ownerId, category, rating=0,ownerEmail } = req.body;
     if (!ownerId || !category || !ownerEmail || !req.file) {
       return res.status(400).json({ message: 'Missing required fields' });
@@ -12,7 +13,7 @@ exports.createCompetition = async (req, res) => {
       category,
       rating,
       ownerEmail,
-      file: req.file.path
+      fileUrl: req.file.path
     });
 
     await newCompetition.save();
@@ -28,7 +29,6 @@ exports.getCompetitionsByCategory = async (req, res) => {
       return res.status(400).json({ message: 'Category is required' });
     }
     try {
-
       const competitions = await Competition.find({  category:category });
       res.json(competitions);
 
@@ -39,7 +39,7 @@ exports.getCompetitionsByCategory = async (req, res) => {
   };
 exports.updateRating = async (req, res) => {
   const { competitionId } = req.params;
-  const { rating } = req.body;
+  const { rating, userId } = req.body;
 
   try {
     const competition = await Competition.findById(competitionId);
@@ -47,8 +47,14 @@ exports.updateRating = async (req, res) => {
       return res.status(404).json({ message: 'Competition not found' });
     }
 
+    if (competition.ratedBy.includes(userId)) {
+      return res.status(400).json({ message: 'User has already rated this competition' });
+    }
+
     competition.rating += rating;
-    await competition.save(); 
+    competition.ratedBy.push(userId);
+    console.log("fileUrl:", competition.fileUrl);
+    await competition.save(); // שומר את הדירוג החדש
 
     res.status(200).json({ message: 'Score updated successfully', competition });
   } catch (error) {
@@ -56,5 +62,7 @@ exports.updateRating = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+
 
 

@@ -46,7 +46,7 @@ const UploadCompetitionPopup = ({ onClose, onSuccess }: Props) => {
 
     const data = new FormData();
     data.append("category", competitionID || "pictures");
-    data.append("image", file);
+   data.append("file", file);
     data.append("ownerId", currentUser?._id || "");
     data.append("ownerEmail", currentUser?.email || "");
 
