@@ -2,7 +2,7 @@ const Competition = require('../models/Competition');
 
 exports.createCompetition = async (req, res) => {
   try {
-    const { ownerId, category, score=0,ownerEmail } = req.body;
+    const { ownerId, category, rating=0,ownerEmail } = req.body;
     if (!ownerId || !category || !ownerEmail || !req.file) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
@@ -10,7 +10,7 @@ exports.createCompetition = async (req, res) => {
     const newCompetition = new Competition({
       ownerId,
       category,
-      score,
+      rating,
       ownerEmail,
       file: req.file.path
     });
@@ -37,4 +37,24 @@ exports.getCompetitionsByCategory = async (req, res) => {
       res.status(500).json({ message: 'Failed to get competitions by category' });
     }
   };
+exports.updateRating = async (req, res) => {
+  const { competitionId } = req.params;
+  const { rating } = req.body;
+
+  try {
+    const competition = await Competition.findById(competitionId);
+    if (!competition) {
+      return res.status(404).json({ message: 'Competition not found' });
+    }
+
+    competition.rating += rating;
+    await competition.save(); 
+
+    res.status(200).json({ message: 'Score updated successfully', competition });
+  } catch (error) {
+    console.error('Error updating score:', error.message);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 
