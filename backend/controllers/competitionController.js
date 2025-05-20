@@ -1,46 +1,77 @@
-const Competition = require('../models/Competition');
+const Competition = require('../models/competition');
+const { cloudinary } = require('../config/cloudinary');
+
+exports.getCompetitionsByCategory = async (req, res) => {
+  const { category } = req.params;
+  
+  if (!category) {
+    return res.status(400).json({ message: 'Category is required' });
+  }
+
+  try {
+    const competitions = await Competition.find({ category });
+    res.json(competitions);
+  } catch (error) {
+    console.error('Failed to get competitions by category:', error.message);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
 
 exports.createCompetition = async (req, res) => {
+  
   try {
-    console.log("הנתונים שקיבלתי:", JSON.stringify(req.body));
-    const { ownerId, category, rating=0,ownerEmail } = req.body;
-    if (!ownerId || !category || !ownerEmail || !req.file) {
-      return res.status(400).json({ message: 'Missing required fields' });
+    const { ownerId, category, ownerEmail } = req.body;
+
+    if (!req.file || !req.file.path) {
+      return res.status(400).json({ message: 'Image upload failed' });
     }
+
+    const fileUrl = req.file.path;
+    const publicId = getPublicIdFromUrl(fileUrl); 
 
     const newCompetition = new Competition({
       ownerId,
       category,
-      rating,
+      rating: 0,
       ownerEmail,
-      fileUrl: req.file.path
+      fileUrl,
+      publicId 
     });
 
     await newCompetition.save();
-    res.status(201).json(newCompetition);
- } catch (error) {
-  console.error('Error creating competition:', error.message, error.stack);
-  res.status(500).json({ message: error.message, stack: error.stack });
-}
-};
-exports.getCompetitionsByCategory = async (req, res) => {
-    let {category} = req.params;
-    if (!category) {
-      return res.status(400).json({ message: 'Category is required' });
-    }
-    try {
-      const competitions = await Competition.find({  category:category });
-      res.json(competitions);
+    
+    res.status(201).json({ message: 'Competition created successfully', competition: newCompetition });
 
-    } catch (error) {
-      console.error('Failed to get competitions by category:', error);
-      res.status(500).json({ message: 'Failed to get competitions by category' });
-    }
-  };
+  } catch (error) {
+    console.error('Error creating competition:', error.message);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+const getPublicIdFromUrl = (fileUrl) => {
+  try {
+    const url = new URL(fileUrl);
+    const pathParts = url.pathname.split('/');
+    const uploadIndex = pathParts.findIndex(p => p === 'upload');
+    const publicIdWithExt = pathParts.slice(uploadIndex + 1).join('/');
+
+    const partsWithoutVersion = publicIdWithExt.split('/');
+    const versionPart = partsWithoutVersion[0]; 
+    const rest = partsWithoutVersion.slice(1).join('/');
+    const withoutExtension = rest.replace(/\.[^/.]+$/, '')
+
+    return withoutExtension;
+  } catch (err) {
+    console.error('Failed to extract public_id from URL:', err.message);
+    return null;
+  }
+};
+
+
 exports.updateRating = async (req, res) => {
   const { competitionId } = req.params;
-  const { rating, userId } = req.body;
-
+  const { rating,userId } = req.body;
+  
   try {
     const competition = await Competition.findById(competitionId);
     if (!competition) {
@@ -53,8 +84,7 @@ exports.updateRating = async (req, res) => {
 
     competition.rating += rating;
     competition.ratedBy.push(userId);
-    console.log("fileUrl:", competition.fileUrl);
-    await competition.save(); // שומר את הדירוג החדש
+    await competition.save(); 
 
     res.status(200).json({ message: 'Score updated successfully', competition });
   } catch (error) {
@@ -63,6 +93,29 @@ exports.updateRating = async (req, res) => {
   }
 };
 
+exports.deleteCompetition = async (req, res) => {
+  const { competitionId } = req.params;
 
+  try {
+    const competition = await Competition.findById(competitionId);
+    
+    if (!competition) {
+      return res.status(404).json({ message: 'Competition not found' });
+    }
 
+    const { publicId } = competition;
+    if (publicId) {
+      const result = await cloudinary.uploader.destroy(publicId);
+      console.log('Cloudinary delete result:', result);
+    } else {
+      console.warn('No publicId found for competition:', competitionId);
+    }
 
+    await Competition.findByIdAndDelete(competitionId);
+
+    res.status(200).json({ message: 'Competition and image deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting competition:', error.message);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};

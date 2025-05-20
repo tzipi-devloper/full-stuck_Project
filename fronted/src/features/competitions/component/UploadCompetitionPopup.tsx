@@ -37,29 +37,35 @@ const UploadCompetitionPopup = ({ onClose, onSuccess }: Props) => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!file) {
-      setErrorMessage("בחר תמונה");
-      return;
-    }
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!file) {
+    setErrorMessage("בחר תמונה");
+    return;
+  }
 
-    const data = new FormData();
-    data.append("category", competitionID || "pictures");
-   data.append("file", file);
-    data.append("ownerId", currentUser?._id || "");
-    data.append("ownerEmail", currentUser?.email || "");
+  if (!currentUser || !currentUser._id || !currentUser.email) {
+    setErrorMessage("שגיאה: המשתמש לא מחובר.");
+    return;
+  }
 
-    try {
-      await uploadCompetition(data).unwrap();
-      setOpenSnackbar(true);
-      onSuccess();
-      setFile(null);
-    } catch (err) {
-      console.error(err);
-      setErrorMessage("שגיאה בהעלאה");
-    }
-  };
+  const data = new FormData();
+  data.append("category", competitionID || "pictures");
+  data.append("image", file);
+  data.append("ownerId", currentUser._id); 
+  data.append("ownerEmail", currentUser.email);
+
+  try {
+    await uploadCompetition(data).unwrap();
+    setOpenSnackbar(true);
+    onSuccess();
+    setFile(null);
+  } catch (err) {
+    console.error(err);
+    setErrorMessage("שגיאה בהעלאה");
+  }
+};
+
 
   return (
     <>

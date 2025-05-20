@@ -16,11 +16,11 @@ const competitionsAPI = competitionSlice.injectEndpoints({
       invalidatesTags: ["Competition"],
     }),
 
-     updateCompetitionRating: builder.mutation({
-      query: ({ competitionId, rating , userId}) => ({
+    updateCompetitionRating: builder.mutation({
+      query: ({ competitionId, rating, userId }) => ({
         url: `/update/${competitionId}`,
         method: "PUT",
-        body: { rating , userId},
+        body: { rating, userId },
       }),
       invalidatesTags: ["Competition"],
     }),
