@@ -1,75 +1,144 @@
 import { useState } from "react";
+import {Card,CardContent,CardMedia,Typography,Snackbar,Alert} from "@mui/material";
+import { Rate, Tag } from "antd";
 import { CompetitionItem } from "../competitionsTypes";
+import { useUpdateCompetitionRatingMutation } from "../competitionsAPI";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "../../auth/currentUserSlice";
 
 interface Props {
   competitionItem: CompetitionItem;
 }
+
 const CompetitionCard = ({ competitionItem }: Props) => {
   const [value, setValue] = useState<number | null>(null);
-  const handleRatingChange = (newValue: number) => {
+  const [updateCompetitionRating] = useUpdateCompetitionRatingMutation();
+  const currentUser = useSelector(selectCurrentUser);
+
+  const [openSnackbar, setOpenSnackbar] = useState (false);
+  const [snackbarMessage, setSnackbarMessage] = useState ("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState <"success" | "warning" | "error">("success");
+
+  const handleRatingChange = async (newValue: number) => {
+    if (!currentUser) {
+      setSnackbarMessage("עליך להתחבר כדי לדרג");
+      setSnackbarSeverity("warning");
+      setOpenSnackbar(true);
+      return;
+    }
+
+    if (currentUser._id === competitionItem.ownerId) {
+      setSnackbarMessage("בעל התחרות לא יכול לדרג את עצמו");
+      setSnackbarSeverity("warning");
+      setOpenSnackbar(true);
+      return;
+    }
     setValue(newValue);
+
+    try {
+      await updateCompetitionRating({
+        competitionId: competitionItem._id,
+        rating: newValue,
+        userId: currentUser._id
+      }).unwrap();
+
+      setSnackbarMessage("הדירוג עודכן בהצלחה");
+      setSnackbarSeverity("success");
+      setOpenSnackbar(true);
+    } catch (error: any) {
+      const errorMessage = error?.data?.message || "שגיאה בעדכון הדירוג";
+
+      if (errorMessage === "User has already rated this competition") {
+        setSnackbarMessage("כבר דירגת את התחרות הזו. לא ניתן לדרג פעמיים.");
+        setSnackbarSeverity("warning");
+      } else {
+        setSnackbarMessage("שגיאה בעדכון הדירוג. אנא נסה שוב מאוחר יותר.");
+        setSnackbarSeverity("error");
+      }
+      setOpenSnackbar(true);
+    }
   };
+
   return (
-    <div
-      style={{
-        width: 300,
-        backgroundColor: "#1f1f1f",
-        color: "#fff",
-        borderRadius: 16,
-        overflow: "hidden",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
-        border: "1px solid #ffc107",
-        transition: "transform 0.3s",
-      }}
-    >
-      <div style={{ position: "relative" }}>
-        <img
-          src={competitionItem.file}
+    <>
+      <Card
+        style={{
+          width: 320,
+          borderRadius: 16,
+          overflow: "hidden",
+          background: "#1f1f1f",
+          border: "1px solid #ffc107",
+          boxShadow: "0 6px 24px rgba(0,0,0,0.4)"
+        }}
+      >
+        <CardMedia
+          component="img"
           alt="תמונה לתחרות"
+          image={competitionItem.fileUrl}
           style={{
-            width: "100%",
             height: 200,
-            objectFit: "cover",
+            objectFit: "cover"
           }}
         />
-      </div>
+        <CardContent>
+          <Typography
+            variant="h6"
+            style={{
+              color: "#ffc107",
+              fontWeight: "bold",
+              fontSize: "18px"
+            }}
+          >
+            קטגוריה: {competitionItem.category}
+          </Typography>
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            style={{ color: "#ccc", fontSize: "14px" }}
+          >
+            הועלה על ידי: {competitionItem.ownerEmail}
+          </Typography>
+          <br />
+          <Tag color="gold" style={{ marginTop: 8, fontSize: 14 }}>
+            ציון: {competitionItem.rating}
+          </Tag>
 
-      <div style={{ padding: 16 }}>
-        <div
-          style={{
-            fontWeight: "bold",
-            fontSize: "18px",
-            color: "#ffc107",
-            marginBottom: 4,
-          }}
-        >
-          קטגוריה: {competitionItem.category}
-        </div>
-        <div style={{ fontSize: "14px", color: "#ccc" }}>
-          הועלה על ידי: {competitionItem.ownerEmail}
-        </div>
-        <div style={{ fontSize: "16px", marginTop: 8, color: "#ffeb3b" }}>
-          ציון: {competitionItem.score}
-        </div>
-
-        <div style={{ marginTop: 12 }}>
-          {[1, 2, 3, 4, 5].map((star) => (
-            <span
-              key={star}
-              onClick={() => handleRatingChange(star)}
+          <div
+            style={{
+              marginTop: 12,
+              backgroundColor: "#2a2a2a",
+              padding: "8px 12px",
+              borderRadius: "8px",
+              display: "inline-block"
+            }}
+          >
+            <Rate
+              allowClear
+              value={value ?? competitionItem.rating ?? 0}
+              onChange={handleRatingChange}
               style={{
-                cursor: "pointer",
-                fontSize: 20,
-                marginRight: 4,
-                color: value && value >= star ? "#ff9800" : "#777",
+                color: "#ffca28",
+                fontSize: 24
               }}
-            >
-              ★
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenSnackbar(false)}
+      >
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 
