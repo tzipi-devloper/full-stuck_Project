@@ -1,5 +1,12 @@
 import { useState } from "react";
-import {Card,CardContent,CardMedia,Typography,Snackbar,Alert} from "@mui/material";
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Snackbar,
+  Alert
+} from "@mui/material";
 import { Rate, Tag } from "antd";
 import { CompetitionItem } from "../competitionsTypes";
 import { useUpdateCompetitionRatingMutation } from "../competitionsAPI";
@@ -15,9 +22,11 @@ const CompetitionCard = ({ competitionItem }: Props) => {
   const [updateCompetitionRating] = useUpdateCompetitionRatingMutation();
   const currentUser = useSelector(selectCurrentUser);
 
-  const [openSnackbar, setOpenSnackbar] = useState (false);
-  const [snackbarMessage, setSnackbarMessage] = useState ("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState <"success" | "warning" | "error">("success");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState<
+    "success" | "warning" | "error"
+  >("success");
 
   const handleRatingChange = async (newValue: number) => {
     if (!currentUser) {
@@ -33,13 +42,15 @@ const CompetitionCard = ({ competitionItem }: Props) => {
       setOpenSnackbar(true);
       return;
     }
+
     setValue(newValue);
 
     try {
       await updateCompetitionRating({
         competitionId: competitionItem._id,
         rating: newValue,
-        userId: currentUser._id
+        userId: currentUser._id,
+        category: competitionItem.category // ✅ הכרחי כדי ש-invalidatesTags יעבוד
       }).unwrap();
 
       setSnackbarMessage("הדירוג עודכן בהצלחה");
@@ -75,19 +86,12 @@ const CompetitionCard = ({ competitionItem }: Props) => {
           component="img"
           alt="תמונה לתחרות"
           image={competitionItem.fileUrl}
-          style={{
-            height: 200,
-            objectFit: "cover"
-          }}
+          style={{ height: 200, objectFit: "cover" }}
         />
         <CardContent>
           <Typography
             variant="h6"
-            style={{
-              color: "#ffc107",
-              fontWeight: "bold",
-              fontSize: "18px"
-            }}
+            style={{ color: "#ffc107", fontWeight: "bold", fontSize: "18px" }}
           >
             קטגוריה: {competitionItem.category}
           </Typography>
@@ -116,10 +120,7 @@ const CompetitionCard = ({ competitionItem }: Props) => {
               allowClear
               value={value ?? competitionItem.rating ?? 0}
               onChange={handleRatingChange}
-              style={{
-                color: "#ffca28",
-                fontSize: 24
-              }}
+              style={{ color: "#ffca28", fontSize: 24 }}
             />
           </div>
         </CardContent>
