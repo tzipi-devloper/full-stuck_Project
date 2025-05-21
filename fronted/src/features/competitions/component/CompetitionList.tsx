@@ -31,11 +31,11 @@ const CompetitionList = () => {
   };
 
   const handleMouseEnter = (competition: CompetitionItem) => {
-    setSelectedCompetition(competition);
+    setSelectedCompetition(competition); // עדכון המוביל ברגע של הריחוף
   };
 
   const handleMouseLeave = () => {
-    setSelectedCompetition(null);
+    setSelectedCompetition(null); // נקה את המוביל כשהריחוף עוזב
   };
 
   if (isLoading || isTopLoading) return <p>טוען נתונים...</p>;
@@ -77,8 +77,8 @@ const CompetitionList = () => {
       <TopCompetitions
         topCompetitions={topCompetitions || []}
         onSelect={(competition) => setSelectedCompetition(competition)}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
+        onMouseEnter={handleMouseEnter} // כאשר מרחפים מעל התחרות
+        onMouseLeave={handleMouseLeave} // כאשר עוזבים את הריחוף
       />
 
       {/* כל התחרויות */}
@@ -99,11 +99,14 @@ const CompetitionList = () => {
       {selectedCompetition && (
         <div
           style={{
-            position: 'fixed',
+            position: 'absolute', // שינוי מ fixed ל absolute כדי למנוע רעידה
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
             zIndex: 1000,
+            opacity: selectedCompetition ? 1 : 0, // בשיטה זו הכרטיס לא רועד
+            transition: 'opacity 0.3s ease',
+            pointerEvents: 'none', // זה מונע שיתפוס את הקלט וייווצר רעש
           }}
         >
           <CompetitionCard competitionItem={selectedCompetition} />
