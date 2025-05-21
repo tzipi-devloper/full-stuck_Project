@@ -1,36 +1,87 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useGetCompetitionByCategoryQuery, useGetLeadCompetitionsByCategoryQuery } from '../competitionsAPI';
+import {
+  useGetCompetitionByCategoryQuery,
+  useGetLeadCompetitionsByCategoryQuery,
+} from '../competitionsAPI';
 import CompetitionCard from './CompetitionCard';
 import TopCompetitions from './LeadCompetitions';
+import UploadCompetitionPopup from './UploadCompetitionPopup';
 import { CompetitionItem } from '../competitionsTypes';
 
 const CompetitionList = () => {
   const { competitionID } = useParams();
-  const { data, error, isLoading } = useGetCompetitionByCategoryQuery(competitionID || "");
-  const { data: topCompetitions, isLoading: isTopLoading } = useGetLeadCompetitionsByCategoryQuery(competitionID || "");
+  const {
+    data,
+    error,
+    isLoading,
+    refetch,
+  } = useGetCompetitionByCategoryQuery(competitionID || '');
+  const {
+    data: topCompetitions,
+    isLoading: isTopLoading,
+  } = useGetLeadCompetitionsByCategoryQuery(competitionID || '');
 
   const [selectedCompetition, setSelectedCompetition] = useState<CompetitionItem | null>(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  if (isLoading || isTopLoading) return <p>טוען נתונים...</p>;
-  if (error) return <p>שגיאה בשליפת נתונים</p>;
+  const handleUploadSuccess = () => {
+    setIsPopupOpen(false);
+    refetch(); // כדי לטעון מחדש את התחרויות לאחר העלאה מוצלחת
+  };
 
   const handleMouseEnter = (competition: CompetitionItem) => {
     setSelectedCompetition(competition);
   };
 
   const handleMouseLeave = () => {
-    setSelectedCompetition(null)
+    setSelectedCompetition(null);
   };
+
+  if (isLoading || isTopLoading) return <p>טוען נתונים...</p>;
+  if (error) return <p>שגיאה בשליפת נתונים</p>;
 
   return (
     <div style={{ padding: '24px' }}>
+      {/* כותרת וכפתור העלאה */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '24px',
+        }}
+      >
+        <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#ffc107' }}>
+          תחרויות בקטגוריה: {competitionID}
+        </h2>
+        <button
+          onClick={() => setIsPopupOpen(true)}
+          style={{
+            backgroundColor: '#ffc107',
+            color: '#000',
+            fontWeight: 'bold',
+            padding: '10px 20px',
+            borderRadius: '9999px',
+            cursor: 'pointer',
+            transition: 'background-color 0.3s',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#ffca28')}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#ffc107')}
+        >
+          הוסף תחרות
+        </button>
+      </div>
+
+      {/* תחרויות מובילות */}
       <TopCompetitions
         topCompetitions={topCompetitions || []}
         onSelect={(competition) => setSelectedCompetition(competition)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       />
+
+      {/* כל התחרויות */}
       <div
         style={{
           display: 'flex',
@@ -44,6 +95,7 @@ const CompetitionList = () => {
         ))}
       </div>
 
+      {/* תחרות נבחרת מוקפצת */}
       {selectedCompetition && (
         <div
           style={{
@@ -56,6 +108,13 @@ const CompetitionList = () => {
         >
           <CompetitionCard competitionItem={selectedCompetition} />
         </div>
+      )}
+
+      {isPopupOpen && (
+        <UploadCompetitionPopup
+          onClose={() => setIsPopupOpen(false)}
+          onSuccess={handleUploadSuccess}
+        />
       )}
     </div>
   );
