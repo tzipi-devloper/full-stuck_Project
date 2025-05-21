@@ -2,13 +2,20 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const config = require('./config/config'); 
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 const competitionRoutes = require('./routes/competitionRoutes');
 
 dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 5050;
+const PORT = process.env.PORT || 5700;
+
+
+if (!config.createWhiteListPorts.includes(Number(PORT))) {
+  console.error(`❌ פורט ${PORT} לא מאושר לשימוש לפי createWhiteListPorts`);
+  process.exit(1); 
+}
 
 mongoose.connect(process.env.CONECTION_URL)
   .then(() => console.log('✅ MongoDB connected'))
