@@ -32,7 +32,7 @@ const AuthForm = () => {
 
   const onSubmit: SubmitHandler<User | SignInInput> = async (data: User | SignInInput) => {
     try {
-      let response: { token: string } | undefined;
+      let response: { token: string , userInfo:userInfo} | undefined;
 
       if (isSignUp) {
         response = await createUser(data).unwrap();
@@ -43,12 +43,10 @@ const AuthForm = () => {
 
       const token: string | undefined = response?.token;
       if (!token) throw new Error("Token is undefined");
-
       setCookie('token', token, { expires: 1, path: '/' });
-      const decoded = jwtDecode<userInfo>(token);
-      console.log("Decoded:", decoded);
-
-      dispatch(setUser(decoded));
+       if (response?.userInfo) {
+        dispatch(setUser(response.userInfo));
+}
 
       setOpenSnackbar(true);
       isSignUp ? signUpForm.reset() : signInForm.reset();

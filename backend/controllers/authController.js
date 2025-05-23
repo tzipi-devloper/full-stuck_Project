@@ -25,7 +25,7 @@ exports.signIn = async (req, res) => {
         };
         const token = jwt.sign(userInfo, process.env.ACCESS_TOKEN_SECRET);
         console.log('Generated Access Token:', token);
-        return res.status(200).json({ token, message: 'User signed in successfully' });
+        return res.status(200).json({ token,userInfo, message: 'User signed in successfully' });
 
     } catch (error) {
         console.error('Error signing in:', error);
