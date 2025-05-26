@@ -1,5 +1,5 @@
 import competitionSlice from "./competitionSlice";
-import { CompetitionItem } from "./competitionsTypes";
+import { CompetitionItem, QuestionData } from "./competitionsTypes";
 
 const competitionsAPI = competitionSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -29,8 +29,15 @@ const competitionsAPI = competitionSlice.injectEndpoints({
       query: (userId) => `/UserCompetitions/${userId}`,
       providesTags: (result, error, userId) => [{ type: "Competition", id: userId }],
     }),
-
-
+    generateQuestion: builder.mutation<QuestionData, { topic: string }>({
+      query: ({ topic }) => ({
+        url: '/generate-question',
+        method: 'POST',
+        body: {
+          prompt: `כתוב שאלה אמריקאית על ${topic} עם 4 תשובות בפורמט: א), ב), ג), ד). בסוף השאלה הוסף שורה עם (תשובה נכונה: <אות>)`,
+        },
+      }),
+    }),
     updateCompetitionRating: builder.mutation({
       query: ({ competitionId, rating, userId }) => ({
         url: `/update/${competitionId}`,
@@ -50,7 +57,8 @@ export const {
   useGetLeadCompetitionsByCategoryQuery,
   useCreateCompetitionMutation,
   useUpdateCompetitionRatingMutation,
-  useGetUserCompetitionsByUserIdQuery
+  useGetUserCompetitionsByUserIdQuery,
+  useGenerateQuestionMutation
 } = competitionsAPI;
 
 export default competitionsAPI;
