@@ -6,11 +6,12 @@ const config = require('./config/config');
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 const competitionRoutes = require('./routes/competitionRoutes');
+const http = require('http'); 
+const socketIo = require('socket.io'); 
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5700;
-
 
 if (!config.createWhiteListPorts.includes(Number(PORT))) {
   console.error(`❌ פורט ${PORT} לא מאושר לשימוש לפי createWhiteListPorts`);
@@ -21,6 +22,25 @@ mongoose.connect(process.env.CONECTION_URL)
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
+const server = http.createServer(app); 
+const io = socketIo(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
+
+io.on('connection', (socket) => {
+  socket.on('sendMessage', (message) => {
+    io.emit('receiveMessage', message);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
+
 app.use(cors());
 app.use(express.json());
 
@@ -28,6 +48,6 @@ app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/competitions', competitionRoutes);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`🌍 Server is running on http://localhost:${PORT}`);
 });
