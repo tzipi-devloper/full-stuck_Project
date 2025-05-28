@@ -1,77 +1,3 @@
-// import { NavLink } from 'react-router';
-// import { useState } from 'react';
-// import {
-//   AppBar,
-//   Toolbar,
-//   Box,
-//   Button,
-//   Dialog,
-//   DialogTitle,
-//   DialogContent,
-//   IconButton,
-// } from '@mui/material';
-// import CloseIcon from '@mui/icons-material/Close';
-// import { useSelector } from 'react-redux';
-
-// import AuthForm from '../features/auth/AuthForm';
-// import { selectCurrentUser } from '../features/auth/currentUserSlice';
-// import UserMenu from './UserMenu';
-
-// const Navbar = () => {
-//   const user = useSelector(selectCurrentUser);
-//   const [openLogin, setOpenLogin] = useState(false);
-
-//   return (
-//     <>
-//       <AppBar position="fixed" color="primary" elevation={2}>
-//         <Toolbar sx={{ px: 3, display: 'flex', justifyContent: 'space-between' }}>
-//           <Box sx={{ display: 'flex', gap: 3 }}>
-//             <Button
-//               component={NavLink}
-//               to="/"
-//               color="inherit"
-//               sx={{ textTransform: 'none', fontWeight: 500 }}
-//             >
-//               Home Page
-//             </Button>
-//             <Button
-//               component={NavLink}
-//               to="/about"
-//               color="inherit"
-//               sx={{ textTransform: 'none', fontWeight: 500 }}
-//             >
-//               About
-//             </Button>
-//           </Box>
-//           {!user ? (
-//             <Button
-//               color="inherit"
-//               onClick={() => setOpenLogin(true)}
-//               sx={{ textTransform: 'none', fontWeight: 500 }}
-//             >
-//               Login
-//             </Button>
-//           ) : (
-//             <UserMenu />
-//           )}
-//         </Toolbar>
-//       </AppBar>
-//       <Toolbar />
-//       <Dialog open={openLogin} onClose={() => setOpenLogin(false)}>
-//         <DialogTitle>
-//           <IconButton aria-label="close" onClick={() => setOpenLogin(false)}>
-//             <CloseIcon />
-//           </IconButton>
-//         </DialogTitle>
-//         <DialogContent dividers>
-//           <AuthForm />
-//         </DialogContent>
-//       </Dialog>
-//     </>
-//   );
-// };
-
-// export default Navbar;
 import React from 'react';
 import { NavLink } from 'react-router';
 import { useState, useEffect, ReactNode, MouseEvent } from 'react';
@@ -99,12 +25,10 @@ import AuthForm from '../features/auth/AuthForm';
 import { selectCurrentUser } from '../features/auth/currentUserSlice';
 import UserMenu from './UserMenu';
 
-// טיפוס לפרופס של ScrollTop
+
 interface ScrollTopProps {
   children: ReactNode;
 }
-
-// Custom styles
 const styles = {
   appBar: {
     background: 'rgba(0, 0, 0, 0.85)',
@@ -218,7 +142,7 @@ const styles = {
   }
 };
 
-// Scroll to top component
+
 function ScrollTop(props: ScrollTopProps) {
   const { children } = props;
   const trigger = useScrollTrigger({
@@ -256,7 +180,7 @@ const Navbar: React.FC<AuthFormProps> = ({ onSuccess }) => {
     };
 
     window.addEventListener('scroll', handleScroll);
-    
+
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
@@ -264,11 +188,11 @@ const Navbar: React.FC<AuthFormProps> = ({ onSuccess }) => {
 
   return (
     <>
-      <AppBar 
-        position="fixed" 
-        elevation={scrolled ? 4 : 0} 
-        sx={{ 
-          ...styles.appBar, 
+      <AppBar
+        position="fixed"
+        elevation={scrolled ? 4 : 0}
+        sx={{
+          ...styles.appBar,
           transition: 'all 0.3s ease',
           boxShadow: scrolled ? '0 4px 20px rgba(0, 0, 0, 0.5)' : 'none',
         }}
@@ -276,25 +200,17 @@ const Navbar: React.FC<AuthFormProps> = ({ onSuccess }) => {
         <Toolbar sx={{ px: { xs: 1, sm: 3 } }}>
           <Container maxWidth="xl" sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography 
-                variant="h6" 
-                component="div" 
-                sx={{
-                  background: 'linear-gradient(90deg, #ff5733, #4e84d4, #8e44ad, #00ff6a, #ff5733)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  textFillColor: 'transparent',
-                  backgroundSize: '200% auto',
-                  animation: 'gradientAnimation 8s ease infinite',
-                  fontWeight: 700,
-                  fontSize: '1.5rem',
-                  mr: 3
+              <img
+                src="/logo.png" 
+                alt="Logo"
+                style={{
+                  height:80 ,
+                  marginRight: 16,
+                  cursor: 'pointer'
                 }}
-              >
-                CompetitionApp
-              </Typography>
-              
+                onClick={() => window.location.href = '/'}
+              />
+
               <Box sx={{ display: 'flex', gap: { xs: 1, sm: 2 } }}>
                 <Button
                   component={NavLink}
@@ -314,7 +230,7 @@ const Navbar: React.FC<AuthFormProps> = ({ onSuccess }) => {
                 </Button>
               </Box>
             </Box>
-            
+
             {!user ? (
               <Button
                 color="inherit"
@@ -331,9 +247,9 @@ const Navbar: React.FC<AuthFormProps> = ({ onSuccess }) => {
         <div style={styles.gradientBorder}></div>
       </AppBar>
       <Toolbar />
-      
-      <Dialog 
-        open={openLogin} 
+
+      <Dialog
+        open={openLogin}
         onClose={() => setOpenLogin(false)}
         PaperProps={{
           sx: styles.dialogPaper
@@ -342,8 +258,8 @@ const Navbar: React.FC<AuthFormProps> = ({ onSuccess }) => {
         fullWidth
       >
         <DialogTitle>
-          <Typography 
-            variant="h5" 
+          <Typography
+            variant="h5"
             sx={{
               fontWeight: 700,
               background: 'linear-gradient(90deg, #ff5733, #4e84d4)',
@@ -365,7 +281,7 @@ const Navbar: React.FC<AuthFormProps> = ({ onSuccess }) => {
           <AuthForm onSuccess={() => setOpenLogin(false)} />
         </DialogContent>
       </Dialog>
-      
+
       <ScrollTop>
         <Fab size="small" aria-label="scroll back to top" sx={styles.scrollTopButton}>
           <KeyboardArrowUpIcon />
