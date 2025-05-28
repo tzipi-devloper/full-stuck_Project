@@ -26,6 +26,7 @@ exports.addUser = async (req, res) => {
         name: user.name,
         email: user.email,
         _id: user._id,
+          rooms:[],
       };
 
       const token = jwt.sign(userInfo, process.env.ACCESS_TOKEN_SECRET);
