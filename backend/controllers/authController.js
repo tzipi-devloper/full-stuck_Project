@@ -21,7 +21,8 @@ exports.signIn = async (req, res) => {
         const userInfo = {
             name: foundUser.name,
             email: foundUser.email,
-            _id: foundUser._id
+            _id: foundUser._id,
+            rooms: foundUser.rooms || [],
         };
         const token = jwt.sign(userInfo, process.env.ACCESS_TOKEN_SECRET);
         console.log('Generated Access Token:', token);

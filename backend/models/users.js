@@ -19,6 +19,11 @@ const UsersSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-})
+      rooms: {
+        type: [String],
+        default: []
+    }
+});
+
 
 module.exports = mongoose.model('users', UsersSchema)
