@@ -1,7 +1,5 @@
-
-import React from 'react';
 import {
-  useGetUserCompetitionsByUserIdQuery
+  useGetUserCompetitionsByUserIdQuery,
 } from '../competitionsAPI';
 import {
   List,
@@ -11,6 +9,7 @@ import {
   ListItemText,
   CircularProgress,
   Typography,
+  Box,
 } from '@mui/material';
 
 interface UserCompetitionsProps {
@@ -33,23 +32,32 @@ function UserCompetitions({ userId }: UserCompetitionsProps) {
   }
 
   return (
-    <List>
-      {data.map((competition) => (
-        <ListItem key={competition._id} divider>
-          <ListItemAvatar>
-            <Avatar
-              src={competition.fileUrl}
-              alt={competition.category}
-              sx={{ width: 60, height: 60 }}
+    <Box
+      sx={{
+        maxHeight: 400, 
+        overflowY: 'auto',
+        borderRadius: 2,
+        p: 1,   
+      }}
+    >
+      <List>
+        {data.map((competition) => (
+          <ListItem key={competition._id} divider>
+            <ListItemAvatar>
+              <Avatar
+                src={competition.fileUrl}
+                alt={competition.category}
+                sx={{ width: 60, height: 60 }}
+              />
+            </ListItemAvatar>
+            <ListItemText
+              primary={`קטגוריה: ${competition.category}`}
+              secondary={`דירוג: ${competition.rating}`}
             />
-          </ListItemAvatar>
-          <ListItemText
-            primary={`קטגוריה: ${competition.category}`}
-            secondary={`דירוג: ${competition.rating}`}
-          />
-        </ListItem>
-      ))}
-    </List>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
   );
 }
 
