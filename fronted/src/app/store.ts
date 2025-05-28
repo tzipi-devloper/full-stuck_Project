@@ -3,7 +3,6 @@ import competition from '../features/competitions/competitionStateSlice';
 import authAPI from '../features/auth/authAPI';
 import authUserReducer from "../features/auth/currentUserSlice";
 import competitionSlice from '../features/competitions/competitionSlice';
-
 const store = configureStore({
   reducer: {
     competition,
