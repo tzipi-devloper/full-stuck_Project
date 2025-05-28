@@ -11,7 +11,6 @@ const setupSocket = (server) => {
   });
 
   const typingUsersPerRoom = {};
-  // מיפוי socket.id ל-email
   const socketIdToEmail = {};
 
   io.on('connection', (socket) => {
@@ -49,7 +48,7 @@ const setupSocket = (server) => {
 
       try {
         await msg.save();
-        console.log(`[📨] שמירת הודעה בחדר ${category}: ${message}`);
+        console.log(`📨 שמירת הודעה בחדר ${category}: ${message}`);
 
         io.to(category).emit('receiveMessage', msg);
       } catch (err) {
