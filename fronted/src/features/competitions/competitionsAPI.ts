@@ -30,6 +30,13 @@ const competitionsAPI = competitionSlice.injectEndpoints({
       query: (userId) => `/UserCompetitions/${userId}`,
       providesTags: (result, error, userId) => [{ type: "Competition", id: userId }],
     }),
+    deleteCompetition: builder.mutation<void, string>({
+      query: (competitionId) => ({
+        url: `/${competitionId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Competition"],
+    }),
 
     updateCompetitionRating: builder.mutation({
       query: ({ competitionId, rating, userId }) => ({
@@ -49,7 +56,8 @@ export const {
   useGetLeadCompetitionsByCategoryQuery,
   useCreateCompetitionMutation,
   useUpdateCompetitionRatingMutation,
-  useGetUserCompetitionsByUserIdQuery
+  useGetUserCompetitionsByUserIdQuery,
+  useDeleteCompetitionMutation
 } = competitionsAPI;
 
 export default competitionsAPI;

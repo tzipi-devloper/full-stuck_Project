@@ -141,7 +141,8 @@ import { removeCookie, getCookie } from 'typescript-cookie';
 import {jwtDecode} from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import { selectCurrentUser, clearUser } from '../features/auth/currentUserSlice';
-import { useDeleteUserMutation } from '../features/auth/authAPI';
+import { useDeleteUserMutation} from '../features/auth/authAPI';
+
 import { userInfo } from '../features/auth/authTypes';
 import UserCompetitions from '../features/competitions/component/userCompetitions';  
 
@@ -152,6 +153,7 @@ const UserMenu = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const menuOpen = Boolean(anchorEl);
   const [deleteUser] = useDeleteUserMutation();
+
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
   const [openCompetitionsDialog, setOpenCompetitionsDialog] = useState(false);
@@ -177,7 +179,6 @@ const UserMenu = () => {
     handleMenuClose();
   };
 
-  // כאן פותחים את הדיאלוג עם התחרויות במקום ניווט
   const handleMyCompetitions = () => {
     setOpenCompetitionsDialog(true);
     handleMenuClose();
@@ -229,7 +230,7 @@ const UserMenu = () => {
         </MenuItem>
       </Menu>
 
-      {/* דיאלוג הצגת תחרויות */}
+
       <Dialog
         open={openCompetitionsDialog}
         onClose={() => setOpenCompetitionsDialog(false)}
@@ -245,7 +246,7 @@ const UserMenu = () => {
         </DialogActions>
       </Dialog>
 
-      {/* דיאלוג אישור מחיקת חשבון */}
+
       <Dialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)}>
         <DialogTitle>
           <div style={{ display: 'flex', alignItems: 'center' }}>
