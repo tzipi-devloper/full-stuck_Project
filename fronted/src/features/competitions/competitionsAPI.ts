@@ -25,11 +25,11 @@ const competitionsAPI = competitionSlice.injectEndpoints({
       }),
       invalidatesTags: [{ type: "Competition" }],
     }),
+
     getUserCompetitionsByUserId: builder.query<CompetitionItem[], string>({
       query: (userId) => `/UserCompetitions/${userId}`,
       providesTags: (result, error, userId) => [{ type: "Competition", id: userId }],
     }),
-
 
     updateCompetitionRating: builder.mutation({
       query: ({ competitionId, rating, userId }) => ({
@@ -44,7 +44,6 @@ const competitionsAPI = competitionSlice.injectEndpoints({
     }),
   }),
 })
-
 export const {
   useGetCompetitionByCategoryQuery,
   useGetLeadCompetitionsByCategoryQuery,
