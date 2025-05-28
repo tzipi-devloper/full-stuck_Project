@@ -1,12 +1,9 @@
-
 import { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
-
 import {
   Chip, Fade, Tooltip, Box, Typography, IconButton,
   InputAdornment,
 } from '@mui/material';
-
 import {
   Send as SendIcon,
   Person as PersonIcon,
@@ -36,7 +33,7 @@ import {
   StyledTextField,
 } from './Chat.styles';
 
-// Utility
+
 const normalize = (str: string | undefined | null): string =>
   (str || '').trim().toLowerCase();
 
@@ -182,7 +179,6 @@ const Chat = ({
         </ChipsWrapper>
       </HeaderPaper>
 
-      {/* Messages */}
       <MessagesBox ref={messagesContainerRef}>
         {messages.length === 0 ? (
           <Fade in timeout={1000}>
@@ -223,7 +219,6 @@ const Chat = ({
                   <Box>
                     <MessagePaper isMyMessage={isMyMessage} elevation={3}>
                       <Typography
-                        sx={{ whiteSpace: 'pre-wrap' }}
                         variant="body1"
                       >
                         {msg.text}
@@ -240,7 +235,6 @@ const Chat = ({
                     </TimestampBox>
                   </Box>
                 </MessageContainer>
-                {/* קו מפריד הוסר לפי בקשה */}
               </MessageWrapper>
             );
           })
@@ -248,7 +242,6 @@ const Chat = ({
         <div ref={messagesEndRef} />
       </MessagesBox>
 
-      {/* Input */}
       <InputSection>
         <InputWrapper>
           <StyledTextField

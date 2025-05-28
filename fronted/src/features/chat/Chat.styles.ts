@@ -68,7 +68,6 @@ export const UserAvatar = styled(Avatar)<{ isMyMessage: boolean }>(({ isMyMessag
   fontSize: '0.9rem',
   marginX: 8,
 }));
-
 export const MessagePaper = styled(Paper)<{ isMyMessage: boolean }>(({ isMyMessage }) => ({
   padding: 20,
   background: isMyMessage
@@ -76,9 +75,10 @@ export const MessagePaper = styled(Paper)<{ isMyMessage: boolean }>(({ isMyMessa
     : 'linear-gradient(135deg, #424242, #616161)',
   color: 'white',
   borderRadius: 12,
-  maxWidth: '70%',
-  wordBreak: 'break-word',
+  display: 'inline-block',  
+  whiteSpace: 'nowrap',    
 }));
+
 
 export const TimestampBox = styled(Box)<{ isMyMessage: boolean }>(({ isMyMessage }) => ({
   display: 'flex',
