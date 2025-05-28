@@ -74,7 +74,6 @@ const getPublicIdFromUrl = (fileUrl) => {
 exports.updateRating = async (req, res) => {
   const { competitionId } = req.params;
   const { rating,userId } = req.body;
-  
   try {
     const competition = await Competition.findById(competitionId);
     if (!competition) {
