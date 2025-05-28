@@ -3,7 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import  Home  from "../pages/Home";
 import AppLayout from "../components/AppLayout";
 import About from "../pages/About";
-import ShowCompetition from "../features/competitions/ShowCompetition";
+import ShowCompetition from "../features/competitions/component/ShowCompetition";
 
 
 const router = createBrowserRouter([
