@@ -32,7 +32,7 @@ const AuthForm = () => {
 
   const onSubmit: SubmitHandler<User | SignInInput> = async (data: User | SignInInput) => {
     try {
-      let response: { token: string , userInfo:userInfo} | undefined;
+      let response: { token: string, userInfo: userInfo } | undefined;
 
       if (isSignUp) {
         response = await createUser(data).unwrap();
@@ -40,13 +40,13 @@ const AuthForm = () => {
         const { email, password } = data as SignInInput;
         response = await signIn({ email, password }).unwrap();
       }
-
       const token: string | undefined = response?.token;
       if (!token) throw new Error("Token is undefined");
       setCookie('token', token, { expires: 1, path: '/' });
-       if (response?.userInfo) {
+      localStorage.setItem('user', JSON.stringify(response?.userInfo));
+      if (response?.userInfo) {
         dispatch(setUser(response.userInfo));
-}
+      }
 
       setOpenSnackbar(true);
       isSignUp ? signUpForm.reset() : signInForm.reset();
@@ -56,8 +56,8 @@ const AuthForm = () => {
       setErrorSnackbar(true);
     }
   };
- 
-  
+
+
   const toggleMode = () => {
     setMode(prev => (prev === 'signUp' ? 'signIn' : 'signUp'));
     signUpForm.reset();
