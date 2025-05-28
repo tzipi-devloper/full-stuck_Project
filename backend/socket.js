@@ -14,7 +14,6 @@ const setupSocket = (server) => {
   const socketIdToEmail = {};
 
   io.on('connection', (socket) => {
-    console.log(`🔌 משתמש התחבר: ${socket.id}`);
 
     socket.on('joinRoom', async ({ category }) => {
       if (!category) {
@@ -22,40 +21,41 @@ const setupSocket = (server) => {
         return;
       }
 
-      console.log(`✅ Socket ${socket.id} נכנס לחדר ${category}`);
       socket.join(category);
 
       if (!typingUsersPerRoom[category]) {
         typingUsersPerRoom[category] = new Set();
       }
-
-      // שליפת ההודעות האחרונות מהחדר
       const messages = await Message.find({ room: category })
         .sort({ time: -1 })
         .limit(100)
         .lean();
-
       socket.emit('chatHistory', messages.reverse());
     });
 
-    socket.on('sendMessage', async ({ category, message, email, userName }) => {
-      const msg = new Message({
-        room: category,
-        email,
-        name: userName,
-        text: message,
-      });
+   socket.on('sendMessage', async ({ category, message, email, userName }) => {
+  const msg = new Message({
+    room: category,
+    email,
+    name: userName,
+    text: message,
+  });
+  try {
+    let messageCount = await Message.countDocuments({ room: category });
+    while (messageCount >= 100) {
+      const oldestMessage = await Message.findOne({ room: category }).sort({ time: 1 });
+      if (!oldestMessage) break;
+      await Message.findByIdAndDelete(oldestMessage._id);
+      messageCount--;
+    }
+    await msg.save();
+    io.to(category).emit('receiveMessage', msg);
+  } catch (err) {
+    socket.emit('error', 'שגיאה בשמירת ההודעה');
+  }
+});
 
-      try {
-        await msg.save();
-        console.log(`📨 שמירת הודעה בחדר ${category}: ${message}`);
 
-        io.to(category).emit('receiveMessage', msg);
-      } catch (err) {
-        console.error('Error saving message:', err);
-        socket.emit('error', 'שגיאה בשמירת ההודעה');
-      }
-    });
 
     socket.on('startTyping', ({ category, email }) => {
       if (!category || !email) return;
@@ -80,15 +80,13 @@ const setupSocket = (server) => {
     });
 
     socket.on('disconnecting', () => {
-      // לפני שנסיים את הניתוק, נקבל את כל החדרים של הסוקט
       const rooms = socket.rooms;
 
-      // נקבל את המייל של הסוקט הזה
       const email = socketIdToEmail[socket.id];
       if (!email) return;
 
       rooms.forEach((room) => {
-        if (room === socket.id) return; // לא נכלול את החדר הפנימי של הסוקט
+        if (room === socket.id) return; 
 
         if (typingUsersPerRoom[room]) {
           typingUsersPerRoom[room].delete(email);
@@ -106,3 +104,4 @@ const setupSocket = (server) => {
 };
 
 module.exports = setupSocket;
+
