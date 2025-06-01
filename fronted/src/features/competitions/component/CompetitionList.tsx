@@ -4,32 +4,31 @@ import {
   Box,
   Typography,
   Container,
-  Grid,
   CircularProgress,
-  Alert,
+  Alert
 } from '@mui/material';
 import {
   useGetCompetitionByCategoryQuery,
   useGetLeadCompetitionsByCategoryQuery,
-} from '../competitionsAPI'; 
+} from '../competitionsAPI';
 import CompetitionCard from './CompetitionCard';
 import TopCompetitions from './LeadCompetitions';
-import { CompetitionItem } from '../competitionsTypes'; 
-const CompetitionList: React.FC = () => {
-  const { competitionID } = useParams<{ competitionID: string }>(); 
+import { CompetitionItem } from '../competitionsTypes';
+import Grid from '@mui/material/Grid';
+function CompetitionList() {
+  const { competitionID } = useParams<{ competitionID: string }>();
   const {
-    data, 
-    error, 
+    data,
+    error,
     isLoading,
   } = useGetCompetitionByCategoryQuery(competitionID || '');
-
   const {
-    data: topCompetitions, 
+    data: topCompetitions,
     isLoading: isTopLoading,
   } = useGetLeadCompetitionsByCategoryQuery(competitionID || '');
 
   const [selectedCompetition, setSelectedCompetition] = useState<CompetitionItem | null>(null);
- 
+
   const handleMouseEnter = (competition: CompetitionItem): void => {
     setSelectedCompetition(competition);
   };
@@ -65,6 +64,7 @@ const CompetitionList: React.FC = () => {
       </Box>
     );
   }
+
   if (error) {
     return (
       <Container maxWidth="md" sx={{ mt: 4 }}>
@@ -74,76 +74,113 @@ const CompetitionList: React.FC = () => {
       </Container>
     );
   }
+
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      
-      <Typography
-        variant="h4"
-        gutterBottom
+    <Box sx={{ position: 'relative', minHeight: '100vh' }}>
+      <Box
         sx={{
-          textAlign: 'center',
-          mb: 4,
-          fontWeight: 'bold',
-          background: 'linear-gradient(45deg, #ffc107, #ff9800)',
-          backgroundClip: 'text',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
+          position: 'fixed',
+          left: 20,
+          top: 20,
+          zIndex: 100,
+          background: 'linear-gradient(135deg, #4caf50, #e91e63, #ff5722)',
+          color: 'white',
+          padding: '16px 28px',
+          borderRadius: '12px',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+          },
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            borderRadius: '12px',
+            zIndex: -1,
+          },
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            top: -1,
+            left: -1,
+            right: -1,
+            bottom: -1,
+            borderRadius: '13px',
+            background: 'linear-gradient(135deg, #e91e63, #ff5722)',
+            zIndex: -2,
+            filter: 'blur(1px)',
+          }
         }}
       >
-        תחרויות בקטגוריה: {competitionID}
-      </Typography>
-
-      <TopCompetitions
-        topCompetitions={topCompetitions || []} 
-        onSelect={(competition: CompetitionItem) => setSelectedCompetition(competition)}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-      />
-      <Box sx={{ mt: 4 }}>
         <Typography
-          variant="h5"
+          variant="h6"
           sx={{
-            mb: 3,
-            textAlign: 'center',
-            background: 'linear-gradient(45deg, #ff9800, #4caf50)',
+            mt: 6.5,
+            fontWeight: 700,
+            fontSize: '15px',
+            textShadow: '0 2px 8px rgba(0,0,0,0.5)',
+            letterSpacing: '0.5px',
+            whiteSpace: 'nowrap',
+            background: 'white',
             backgroundClip: 'text',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-            fontWeight: 'bold'
+            textTransform: 'uppercase',
+            fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
           }}
         >
-          כל התחרויות
+          {competitionID}
         </Typography>
-
-        <Grid container spacing={3} justifyContent="center">
-          {data?.map((competitionItem: CompetitionItem) => ( 
-            <Grid item xs={12} sm={6} md={4} lg={3} key={competitionItem._id}>
-              <CompetitionCard competitionItem={competitionItem} />
-            </Grid>
-          ))}
-        </Grid>
       </Box>
-      {selectedCompetition && (
-        <Box
-          sx={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 1000,
-            opacity: selectedCompetition ? 1 : 0,
-            transition: 'opacity 0.3s ease',
-            pointerEvents: 'none',
-            '& > div': {
-              transform: 'scale(1.05)',
-              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
-            }
-          }}
-        >
-          <CompetitionCard competitionItem={selectedCompetition} />
+
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        <TopCompetitions
+          topCompetitions={topCompetitions || []}
+          onSelect={(competition: CompetitionItem) => setSelectedCompetition(competition)}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        />
+
+        <Box sx={{ mt: 4 }}>
+
+
+          <Grid container spacing={3} justifyContent="center">
+            {data?.map((competitionItem: CompetitionItem) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={competitionItem._id}>
+                <CompetitionCard competitionItem={competitionItem} />
+              </Grid>
+            ))}
+          </Grid>
+
         </Box>
-      )}
-    </Container>
+
+        {selectedCompetition && (
+          <Box
+            sx={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 1000,
+              opacity: selectedCompetition ? 1 : 0,
+              transition: 'opacity 0.3s ease',
+              pointerEvents: 'none',
+              '& > div': {
+                transform: 'scale(1.05)',
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
+              }
+            }}
+          >
+            <CompetitionCard competitionItem={selectedCompetition} />
+          </Box>
+        )}
+      </Container>
+    </Box>
   );
-};
+}
+
 export default CompetitionList;

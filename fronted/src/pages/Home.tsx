@@ -171,7 +171,7 @@ const Home: React.FC = () => {
         <Fade in={animate} timeout={1000}>
           <Box>
             <Typography variant="h2" component="h1" sx={styles.titleGradient}>
-              Welcome to Turbo Competition
+              Welcome To Turbo Competition
             </Typography>
             <Typography variant="h6" sx={styles.subtitle}>
               Choose a category and start competing today
@@ -189,7 +189,7 @@ const Home: React.FC = () => {
                       <Box
                         sx={{
                           ...styles.cardMediaGradient,
-                          background: `linear-gradient(135deg, ${color}, rgba(0, 0, 0, 0.8))`
+                          background: `linear-gradient(135deg, ${color}, #e91e63, #ff5722)`
                         }}
                       />
                       <Box sx={styles.cardMediaIcon}>
@@ -208,7 +208,7 @@ const Home: React.FC = () => {
                         size="medium"
                         sx={{
                           ...styles.exploreButton,
-                           background: `rgb(248, 18, 110)`
+                           background: `linear-gradient(45deg, #e91e63, #ff5722)`
                         }}
                       >
                         Explore {label}
