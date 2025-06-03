@@ -3,12 +3,15 @@ import competition from '../features/competitions/competitionStateSlice';
 import authAPI from '../features/auth/authAPI';
 import authUserReducer from "../features/auth/currentUserSlice";
 import competitionSlice from '../features/competitions/competitionSlice';
+import quiz from '../features/quiz/quizSlice'
 const store = configureStore({
   reducer: {
     competition,
     authUser: authUserReducer,
+    quiz,
     [authAPI.reducerPath]: authAPI.reducer,
     [competitionSlice.reducerPath]: competitionSlice.reducer, 
+
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(authAPI.middleware, competitionSlice.middleware), 
