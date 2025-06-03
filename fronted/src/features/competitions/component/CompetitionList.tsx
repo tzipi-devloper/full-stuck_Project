@@ -146,8 +146,6 @@ function CompetitionList() {
         />
 
         <Box sx={{ mt: 4 }}>
-
-
           <Grid container spacing={3} justifyContent="center">
             {data?.map((competitionItem: CompetitionItem) => (
               <Grid item xs={12} sm={6} md={4} lg={3} key={competitionItem._id}>
@@ -155,9 +153,7 @@ function CompetitionList() {
               </Grid>
             ))}
           </Grid>
-
         </Box>
-
         {selectedCompetition && (
           <Box
             sx={{
