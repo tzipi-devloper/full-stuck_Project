@@ -20,9 +20,7 @@ exports.getCompetitionsByCategory = async (req, res) => {
 
 exports.createCompetition = async (req, res) => {
   try {
-    const { ownerId, category, ownerEmail } = req.body;
-    console.log(category);
-    
+    const { ownerId, category, ownerEmail } = req.body;    
     let fileUrl = null;
     let publicId = null;
 

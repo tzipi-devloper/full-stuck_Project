@@ -1,16 +1,8 @@
 import {
   useGetUserCompetitionsByUserIdQuery,
 } from '../competitionsAPI';
-import {
-  List,
-  ListItem,
-  ListItemAvatar,
-  Avatar,
-  ListItemText,
-  CircularProgress,
-  Typography,
-  Box,
-} from '@mui/material';
+import { List,ListItem,ListItemAvatar, Avatar, ListItemText, CircularProgress, Typography, Box,} from '@mui/material';
+import { styles } from '../styled/UserCompetitions.styles';
 
 interface UserCompetitionsProps {
   userId: string;
@@ -24,22 +16,15 @@ function UserCompetitions({ userId }: UserCompetitionsProps) {
   }
 
   if (error) {
-    return <Typography color="error">שגיאה בטעינת התחרויות</Typography>;
+    return <Typography color="error">Error loading competitions</Typography>;
   }
 
   if (!data || data.length === 0) {
-    return <Typography>אין תחרויות להצגה.</Typography>;
+    return <Typography>No competitions to display.</Typography>;
   }
 
   return (
-    <Box
-      sx={{
-        maxHeight: 400, 
-        overflowY: 'auto',
-        borderRadius: 2,
-        p: 1,   
-      }}
-    >
+    <Box sx={styles.wrapper}>
       <List>
         {data.map((competition) => (
           <ListItem key={competition._id} divider>
@@ -47,12 +32,12 @@ function UserCompetitions({ userId }: UserCompetitionsProps) {
               <Avatar
                 src={competition.fileUrl}
                 alt={competition.category}
-                sx={{ width: 60, height: 60 }}
+                sx={styles.avatar}
               />
             </ListItemAvatar>
             <ListItemText
-              primary={`קטגוריה: ${competition.category}`}
-              secondary={`דירוג: ${competition.rating}`}
+              primary={`Category: ${competition.category}`}
+              secondary={`Rating: ${competition.rating}`}
             />
           </ListItem>
         ))}
@@ -60,5 +45,4 @@ function UserCompetitions({ userId }: UserCompetitionsProps) {
     </Box>
   );
 }
-
 export default UserCompetitions;
