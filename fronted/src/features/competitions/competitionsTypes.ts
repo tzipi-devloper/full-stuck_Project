@@ -12,4 +12,13 @@ export interface Category {
   recipes: string; 
   exams: string;
 }
+export interface GenerateQuestionRequest {
+  prompt: string;
+}
+
+export interface QuestionData {
+  question: string;
+  options: string[];
+  correctAnswer: string;
+}
 export type CategoryKeys = keyof Category;

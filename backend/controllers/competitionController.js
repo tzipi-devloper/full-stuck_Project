@@ -1,5 +1,4 @@
 const Competition = require('../models/competition');
-const User = require('../models/users')
 const { cloudinary } = require('../config/cloudinary');
 
 exports.getCompetitionsByCategory = async (req, res) => {
@@ -17,31 +16,29 @@ exports.getCompetitionsByCategory = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-
-exports.createCompetition = async (req, res) => {
+exports.createCompetition = async (req, res) => {  
   try {
-    const { ownerId, category, ownerEmail } = req.body;
+    const { ownerId, category, ownerEmail,rating } = req.body;
 
-    if (!req.file || !req.file.path) {
-      return res.status(400).json({ message: 'Image upload failed' });
+    let fileUrl = null;
+    let publicId = null;
+
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.path);
+      fileUrl = result.secure_url;
+      publicId = result.public_id;
     }
-
-    const fileUrl = req.file.path;
-    const publicId = getPublicIdFromUrl(fileUrl); 
 
     const newCompetition = new Competition({
       ownerId,
       category,
-      rating: 0,
+      rating: 0 || rating,
       ownerEmail,
       fileUrl,
-      publicId 
+      publicId
     });
 
     await newCompetition.save();
-
-    await User.findByIdAndUpdate(ownerId, { $addToSet: { rooms: category } });
-    console.log(User);
     
     res.status(201).json({ message: 'Competition created successfully', competition: newCompetition });
 
@@ -74,6 +71,7 @@ const getPublicIdFromUrl = (fileUrl) => {
 exports.updateRating = async (req, res) => {
   const { competitionId } = req.params;
   const { rating,userId } = req.body;
+  
   try {
     const competition = await Competition.findById(competitionId);
     if (!competition) {
