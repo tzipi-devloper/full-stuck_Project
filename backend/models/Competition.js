@@ -18,12 +18,12 @@ const competitionSchema = new mongoose.Schema({
         required: true
     },
     fileUrl: {
-        type: String,
-        required: true
+        type: String ,
+        required: false
     },
     publicId: {
         type: String,
-        required: true
+        required: false
     },  
     ratedBy: {
         type: [mongoose.Schema.Types.ObjectId],
