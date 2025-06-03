@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import {  Box,Typography, Container,  CircularProgress, Alert,  Grid} from '@mui/material';
 import {  useGetCompetitionByCategoryQuery, useGetLeadCompetitionsByCategoryQuery,} from '../competitionsAPI';
 import CompetitionCard from './CompetitionCard';
-import TopCompetitions from './LeadCompetitions';
+import TopCompetitions from './TopCompetitions';
 import { CompetitionItem } from '../competitionsTypes';
 import { loaderBoxStyle, loaderStyle, errorAlertContainer, pageContainerStyle, fixedLabelBox, fixedLabelText, popupCardBox} from '../styled/CompetitionList.styles';
 
